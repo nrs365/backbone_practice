@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Javascript Scope</title>
+</head>
+<body>
+
+<script>
+    var scope = "global scope";
+
+    function checkscope() {
+        var scope = "local scope";
+        function nested() {
+            var scope = "nested scope";
+            document.write(scope + "<br>");
+        }
+        nested() + "<br>";
+    }
+    checkscope() + "<br>";
+</script>
+</body>
+</html>    

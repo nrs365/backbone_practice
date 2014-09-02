@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Copying, Passing, and Comparing by Value</title>
+</head>
+<body>
+<script>
+
+var n = 1;
+var m = n;
+
+function add_to_total(total, x) {
+    total = total + x;
+}
+add_to_total(n, m);
+
+if(n == 1) m =2;
+
+document.write(n + "<br>"); 
+document.write(m + "<br>"); 
+
+var xmas = new Date(2014, 08, 27);
+document.write((xmas) + "<br>");
+var solstice = xmas;
+solstice.setDate(21);
+document.write((solstice) + "<br>");
+xmas.getDate();
+document.write((xmas) + "<br>");
+
+function add_to_totals(totals, x) {
+    totals[0] = totals[0] + x;
+    totals[1] = totals[1] + x;
+    totals[2] = totals[2] + x;
+}
+
+document.write((xmas == solstice) + "<br>");//should evalute to true
+
+var solstice_plus_4 = new Date(2014, 08, 27);
+document.write((solstice_plus_4) + "<br>");
+
+document.write((xmas == solstice_plus_4) + "<br>");//should evaluate to false
+
+</script>
+</body>
+</html>
