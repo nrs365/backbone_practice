@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>backbone.js Practice (Hello World) and adding items (5) - w/ Comments</title>
+    <!-- <sub>arturadib.com/hello-backbonejs/docs</sub> -->
+</head>
+<body>
+
+
+<script src="js/jquery.js"></script>
+<script src="js/underscore.js"></script>
+<script src="js/backbone.js"></script>
+
+<script>
+(function($){
+
+	Backbone.sync = function(method, model, success, error){
+		success(); // overrides persistence storage (?) with dummy function and enables use of model.destroy() w/o error; backbone.sync is the function that backbone calls when it attempts to read or save a model to the server, uses jquery.ajax and returns jqXHR; method - CRUD (POST, GET, PUT, PATCH, DELETE), model - the model to be saved, options (success and error) success, error, and all other jQuery request options
+	}
+
+	var Item = Backbone.Model.extend({ //creating a model and extending it
+		defaults: {
+			part1: 'hello',
+			part2: 'world'
+		}
+	});
+
+	var List = Backbone.Collection.extend({ //creating a collection class, extending the 
+		model: Item //specifying the model class that the collection contains; this collection has the item model
+	});
+
+	var ItemView = Backbone.View.extend({ //creating the custom view(html) for the itemView (which will be the "hello world" plus incrementer and then the swap delete spans)
+		tagName: 'li',//name of (orphan?) root tag(?) in this.el //tagName/className/id for root elements
+		
+		events: { //so now it checks for two different click events
+			'click span.swap': 'swap',
+			'click span.delete': 'remove'
+		},
+
+		initialize: function(){
+			_.bindAll(this,'render', 'unrender', 'swap', 'remove');
+			this.model.bind('change', this.render);
+			this.model.bind('remove', this.unrender);
+		},
+		render: function(){//default implementation of render is no-op(?) add the code to update this.el and make it look however you want (i think that's how it works)
+			$(this.el).html('<span style="color:black;">'+this.model.get('part1')+' '+this.model.get('part2')+'</span> &nbsp; &nbsp; <span class="swap" style="font-family:sans-serif; color:blue; cursor:pointer;">[swap]</span><span class="delete" style="cursor:pointer; color:red; font-family: sans-serif;">[delete]</span>'); // el has to do with the view in the DOM; still not too sure about this one
+			return this;// don't have to do this, but apparently you should do it to enable chained calls
+		},
+
+		unrender: function(){
+			$(this.el).remove();
+		},
+
+		swap: function(){
+			var swapped = {
+				part1: this.model.get('part2'),
+				part2: this.model.get('part1')
+			};
+			this.model.set(swapped);
+		},
+
+		remove: function(){ //removes a view from the DOM; calls stopListening to remove bound events that the view has listenTo-ed; not sure if that is specific to the destroy() or the remove:function in the view
+			this.model.destroy();
+		}
+	});
+
+	var ListView = Backbone.View.extend({
+		el: $('body'), // el attaches to an existing element (string i'm assuming here)
+
+		events: {
+			'click button#add': 'addItem'
+		},
+		initialize: function(){ //has to do with bindings excluding UI events
+			_.bindAll(this, 'render', 'addItem', 'appendItem');//functions that use 'this' as object should be in this set of parenthesis
+			
+			this.collection = new List();
+			this.collection.bind('add', this.appendItem); //collection event binder
+
+			this.counter = 0;//total number of items added so far
+			this.render(); //makes it a self rendering view?
+		},
+
+		render: function(){//creating the custom view for the static part of the page ("Add item")
+			var self = this;// used as a reference to the 'real' object instead of the event; has to do with binding (i think) http://alistapart.com/article/getoutbindingsituations
+			$(this.el).append("<button id='add'>Add list item</button>");
+			$(this.el).append("<ul></ul>");
+			_(this.collection.models).each(function(item){
+				self.appendItem(item);
+			}, this);
+		},
+
+		addItem: function(){
+			this.counter++;//incrementer
+			var item = new Item(); // new instance of the Item model
+				item.set({
+				part2: item.get('part2') + this.counter//concatinating the counter to "world"
+			});
+			this.collection.add(item);//adding item to collection and view is updating via even add( .add)
+			},
+
+		appendItem: function(item){
+			var itemView = new ItemView({
+				model: item
+			});
+			$('ul', this.el).append(itemView.render().el); // ItemView is coming from line 33 with that function; all the text and formating is done up there instead of down here like in previous examples
+		}
+	});
+
+	var ListView = new ListView();
+})(jQuery);
+</script>
+</body>
+</html>
