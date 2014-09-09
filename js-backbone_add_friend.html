@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Adding Friends in Backbone</title>
+</head>
+<body>
+<script src="js/jquery.js"></script>
+<script src="js/underscore.js"></script>
+<script src="js/backbone.js"></script>
+
+    <button id="addfriend">Add Friend</button>
+    <ul id="friendslist">
+    </ul>
+<script>
+    (function ($){
+        Friend = Backbone.model.extend({
+            name: null
+        });
+        Friends = Backbone.collection.extend({
+            initialize: function (models, options) {
+                this.bind("add", options.view.addFriendLi);
+            }
+        });
+
+        AppView = Backbone.View.extend({ //window.Appview = 
+            el: $("body"),
+            initialize: function() {
+                this.friends = new Friends(null, { view:this });
+            },
+            events: {
+                "click #addfriend": "showPrompt",
+            },
+            showPrompt: function() {
+                var friendName = prompt("Who is your friend?");
+                var friendModel = new Friend({name: friendName});
+                this.friends.add(friendModel);
+            },
+        addFriendLi: function(model){
+            $("#friends-list").append("<li>" + model.get('name') + "</li>");
+        }    
+        });
+        var AppView = new AppView;
+    })(jQuery);    
+</script>    
+
+</body>
+</html>
