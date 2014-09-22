@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html ng-app="demoApp">
+  <head>
+    <title>Intro to AngularJS</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+  </head>
+  <body ng-controller="Ctrl">
+
+    <div class="container">
+
+      <h1>
+        Contacts Manager
+        <input type="text" ng-model="search" class="form-control pull-right" style="width:200px; display:inline" placeholder="Contact Search">
+      </h1>
+
+      <table class="table table-striped" ng-show="contacts.length > 0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="contact in contacts | filter: search">
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.email }}</td>
+            <td>{{ contact.phone }}</td>
+            <td>
+              <button class="btn btn-default btn-xs" ng-click="editContact($index)">Edit</button> 
+              <button class="btn btn-danger btn-xs" ng-click="removeContact($index)">Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p ng-hide="contacts.length > 0">There are no contacts to display.</p>
+
+      <h2>Add Contact</h2>
+      <form role="form" ng-submit="addContact()">
+        <div class="form-group">
+          <label for="text">Name</label>
+          <input type="text" class="form-control" id="text" placeholder="Enter name" ng-model="contactNew.name" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="contactNew.email" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone number</label>
+          <input type="text" class="form-control" id="phone" placeholder="Enter phone number" ng-model="contactNew.phone" required>
+        </div>
+        <button type="button" class="btn btn-default" ng-click="contactNew = {}">Clear</button> 
+        <button type="submit" class="btn btn-success">Add Contact</button>
+      </form>
+
+      <form role="form" ng-submit="saveEditedContact()">
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Edit Contact</h4>
+              </div>
+              <div class="modal-body">
+
+                <div class="form-group">
+                  <label for="text">Name</label>
+                  <input type="text" class="form-control" id="text" placeholder="Enter name" ng-model="contactEdit.name" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email address</label>
+                  <input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="contactEdit.email" required>
+                </div>
+                <div class="form-group">
+                  <label for="phone">Phone number</label>
+                  <input type="text" class="form-control" id="phone" placeholder="Enter phone number" ng-model="contactEdit.phone" required>
+                </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+
+    <script>
+
+    (function() {
+
+      var app = angular.module('demoApp', []);
+
+      app.controller('Ctrl', function ($scope) {
+
+        $scope.contacts = [
+          { name: 'Bob', email: 'bob@mail.com', phone: '123-123-1234'},
+          { name: 'Sarah', email: 'sarah@mail.com', phone: '123-123-1234'},
+          { name: 'Joe', email: 'joe@mail.com', phone: '123-123-1234'},
+          { name: 'Mary', email: 'mary@mail.com', phone: '123-123-1234'}
+        ];
+
+        $scope.contactNew = {};
+        $scope.contactEdit = {};
+
+        $scope.removeContact = function(index) {
+          if (confirm('Are you sure you want to remove ' + $scope.contacts[index].name)) {
+            $scope.contacts.splice(index, 1);
+          }
+        };
+
+        $scope.addContact = function() {
+          $scope.contacts.push($scope.contactNew);
+          $scope.contactNew = {};
+        };
+
+        $scope.editContact = function(index) {
+          $scope.contactEdit.id = index;
+          $scope.contactEdit.name = $scope.contacts[index].name;
+          $scope.contactEdit.email = $scope.contacts[index].email;
+          $scope.contactEdit.phone = $scope.contacts[index].phone;
+          $('#myModal').modal('show');
+        };
+
+        $scope.saveEditedContact = function () {
+          $scope.contacts[$scope.contactEdit.id] = $scope.contactEdit;
+          $('#myModal').modal('hide');
+        };
+
+      });
+
+    }());
+
+    </script>
+
+    <!-- 
+    1)  Hello {{ "World" }}.
+    2)  Added controller. (w/ $scope.name = "World")
+    3)  Added checkbox w/ ng-show. (to show or hide the name)
+    4)  Create contacts array with ng-repeat.
+    5)  Convert contacts to array of objects.
+    6)  Implemented remove contact w/ confirm.
+    7)  Added no contacts dislay message.
+    8)  Implemented add contact. ($scope.contactNew ng-submit="addContact")
+    9)  Allow clearing of form inputs.
+    10) Added "required" form validation.
+    11) Added modal for editing contacts.
+    12) Added search field for contacts.
+    13) Converted to app module.
+    -->
+
+  </body>
+</html>
