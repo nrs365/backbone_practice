@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chris Turner Challenge - Contact Manager</title>
+    <script src="js/jquery.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="js/underscore.js"></script>
+    <script src="js/backbone.js"></script>
+  </head>
+  <body>
+    <h1>displaying a collection in backbone</h1>
+    <ul>
+    </ul>    
+
+<script>
+(function($){
+Backbone.sync = function(method, model, success, error){
+      success(); 
+      };
+var Contact = Backbone.Model.extend({
+  defaults: {
+    name: 'Guest User',
+    age: 30,
+    occupation: 'worker'
+  }
+});
+// A List of People
+var ContactCollection = Backbone.Collection.extend({
+  model: Contact
+});
+// View for all people
+var ContactsView = Backbone.View.extend({
+  tagName: 'ul',
+  render: function(){
+      this.collection.each(function(person){
+          var ContactView = new ContactView({ model: person });
+          this.$el.append(ContactView.render().el); // calling render method manually..
+      }, this);
+      return this; // returning this for chaining..
+  }
+});
+// The View for a Person
+var ContactView = Backbone.View.extend({
+  tagName: 'li',
+  template: _.template($('#contactTemplate').html()),
+       //////////   initialize function is gone from there. So we need to call render method manually now..
+  render: function(){
+      this.$el.html( this.template(this.model.toJSON()));
+      return this;  // returning this from render method..
+  }
+});
+var ContactsCollection = new ContactsCollection([
+  {
+      name: 'Mohit Jain',
+      age: 26
+  },
+  {
+      name: 'Taroon Tyagi',
+      age: 25,
+      occupation: 'web designer'
+  },
+  {
+      name: 'Rahul Narang',
+      age: 26,
+      occupation: 'Java Developer'
+  },
+]);
+var ContactsView = new ContactsView({ collection: ContactsCollection });
+$(document.body).append(ContactsView.render().el);   // adding people view in DOM.. Only for demo purpose...
+});
+</script>
+</body>
+</html>
