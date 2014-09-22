@@ -108,29 +108,16 @@
         events: {
           'click button#add': 'add',
           'click button#edit': 'edit',
-          'click button#remove': 'remove',
-          'click button#search': 'search'
+          // 'click button#remove': 'remove',
+          // 'click button#search': 'search'
         },
-        // initialize: function(){
-          // this.ContactList = new ContactList({ view: this });
-          // _.bindAll(this, 'render', 'unrender', 'add', 'edit', 'remove', 'search');
-          // this.model.bind('add', options.view.addContact)
-          // this.model.bind('edit', this.render);
-          // this.model.bind('remove', this.unrender);
-        //   var self = this;
-        //   this.collection = new ContactList();
-        //   this.collection.fetch().done(function(){
-        //     self.render();
-        //   });
-        // },
-
+        
         initialize: function(){
-        // _.bindAll(this, 'render', 'unrender', 'add', 'edit', 'remove', 'search');
-        this.collection = new ContactCollection()
+        // _(this).bindAll(this, 'add', 'edit');
+        // this.collection.bind('add', this.add);
+        // this.collection.bind('remove',this.remove);
+        this.collection = new ContactCollection();
         this.listenTo(this.collection, 'reset', this.render);
-        // // this.model.bind('add', options.view.addContact)
-        // this.model.bind('edit', this.render);
-        // this.model.bind('remove', this.unrender);
 
         this.collection.reset([
           { name: 'Bob', email: 'bob@mail.com', phone: '123-123-1234'},
@@ -140,29 +127,13 @@
           ]);
         },
 
-
         render:function(){
-          // $(this.el).html('<td>' + Contact.name + '</td><td>'+ Contact.email + '</td><td>' + Contact.phone + '</td>');
-          // _(this.collection.models).each(function(Contact){
-          //   self.appendContact(Contact);
-          // });
-          // return this;
-          // collection.each(function(Contact){
-          //   console.log(Contact);
-          // });
           this.$el.html(this.template({ContactCollection: this.collection.toJSON() }));
           return this;
         },
-
-        unrender: function(){
-          $(this.el).remove();
-        },
-
-        remove: function(){
-          this.contact.destroy();
-        },
-        search: function(){
-          this.contact.search();
+        edit:function(){
+          modalView = new EditView();
+          modalView.show();
         }
       });
         
@@ -177,21 +148,44 @@
       });  
 
       var EditView = Backbone.View.extend({
-        el: $('body'),
+      //   el: $('editModal'),
+
+      //   events: {
+      //     'click button#edit': 'EditContact'
+      //   },
+      //   initialize: function(){
+      //   _.bindAll(this, 'render', 'EditContact');
+      //   this.model.bind('render', this.render);
+      //   this.model.bind('EditContact', this.render);
+      //   },
+      //   render: function(){
+      //     $(this.el).show('#EditModal')
+      //     },
+      //   EditContact: function(){
+      //     //omg
+      //   }
+      // });
+        id:'base-modal',
+        className: 'modal fade hide',
+        template: 'modals/BaseModal',  
 
         events: {
-          'click button#edit': 'EditContact'
+          'hidden': 'teardown'
         },
-        initialize: function(){
-        _.bindAll(this, 'render', 'EditContact');
-        this.model.bind('render', this.render);
-        this.model.bind('EditContact', this.render);
+        initialize: function() {
+          _(this).bindAll();
+          this.render();
         },
-        render: function(){
-          $(this.el).show('#EditModal')
-          },
-        EditContact: function(){
-          //omg
+        show: function(){
+          this.$el.modal('show');
+        },
+        teardown: function(){
+          this.$el.data('modal', null);
+          this.remove();
+        },
+        renderView: function(template){
+          this.$el.html(template());
+          this.$el.modal({show:false});
         }
       });
       var ContactsView = new ContactsView();
