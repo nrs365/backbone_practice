@@ -10,7 +10,7 @@
   </head>
   <body>
 
-    <div class="container">
+    <div class="container" id="">
       <h1>Contacts Manager<input type="text" class="form-control pull-right" style="width:200px; display:inline" placeholder="Contact Search">
             </h1>
             <table class="table table-striped">
@@ -22,12 +22,19 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr id="ContactView">
-                  <!-- rendered view -->
-                </tr>
-              <button class="btn btn-default btn-xs" id="edit">Edit</button> 
-                    <button class="btn btn-danger btn-xs" id="remove">Remove</button>
+              <tbody id="ContactView">
+                  
+                  <script type="text/template" id="details">
+                
+                  <% _.each(ContactCollection, function(Contact) { %><tr><td><%=Contact.name%></td><td><%=Contact.email%></td><td><%=Contact.phone%></td>
+                    <td>
+                      <button class="btn btn-default btn-xs" id="edit">Edit</button> 
+                      <button class="btn btn-danger btn-xs" id="remove">Remove</button>
+                    </td>
+                    </tr>
+                    <%});%>
+                   
+                  </script>   
                   </td>
                 </tr>
               </tbody>
@@ -82,58 +89,21 @@
     </div>
 
     <script>
-    (function ($){
-      Backbone.sync = function(method, model, success, error){
-      success(); 
-      }
+    // (function ($){
+    //   Backbone.sync = function(method, model, success, error){
+    //   success(); 
+    //   }
       var Contact = Backbone.Model.extend({
-        defaults: {
-          contact1: { 
-            name: 'Bob', 
-            email: 'bob@mail.com', 
-            phone: '123-123-1234'
-          },
-          contact2: {
-            name: 'Sarah', 
-            email: 'sarah@mail.com', 
-            phone: '123-123-1234'
-          },
-          contact3: {
-            name: 'Joe', 
-            email: 'joe@mail.com', 
-            phone: '123-123-1234'
-          },
-            contact4: {
-            name: 'Mary', 
-            email: 'mary@mail.com', 
-            phone: '123-123-1234'
-          }
-        }
       });
 
-      var ContactList = Backbone.Collection.extend({
-        initialize: function(options){
-          this.options = _(options).pick('name', 'email', 'phone')
-            this.bind('add', options.view.addContact);
-        },
-        // model:Contact
+      var ContactCollection = Backbone.Collection.extend({
+        url: '/echo/json/',
+        model: Contact
       });
       
       var ContactsView = Backbone.View.extend({
         el: $('#ContactView'),
-
-        initialize: function(){
-          // this.ContactList = new ContactList({ view: this });
-          //_.bindAll(this, 'render', 'unrender', 'add', 'edit', 'remove', 'search');
-          // this.model.bind('add', options.view.addContact)
-          // this.model.bind('edit', this.render);
-          // this.model.bind('remove', this.unrender);
-          var self = this;
-          this.collection = new ContactList();
-          this.collection.fetch().done(function(){
-            self.render();
-          });
-        },
+        template: _.template($("#details").html()),
 
         events: {
           'click button#add': 'add',
@@ -141,6 +111,35 @@
           'click button#remove': 'remove',
           'click button#search': 'search'
         },
+        // initialize: function(){
+          // this.ContactList = new ContactList({ view: this });
+          // _.bindAll(this, 'render', 'unrender', 'add', 'edit', 'remove', 'search');
+          // this.model.bind('add', options.view.addContact)
+          // this.model.bind('edit', this.render);
+          // this.model.bind('remove', this.unrender);
+        //   var self = this;
+        //   this.collection = new ContactList();
+        //   this.collection.fetch().done(function(){
+        //     self.render();
+        //   });
+        // },
+
+        initialize: function(){
+        // _.bindAll(this, 'render', 'unrender', 'add', 'edit', 'remove', 'search');
+        this.collection = new ContactCollection()
+        this.listenTo(this.collection, 'reset', this.render);
+        // // this.model.bind('add', options.view.addContact)
+        // this.model.bind('edit', this.render);
+        // this.model.bind('remove', this.unrender);
+
+        this.collection.reset([
+          { name: 'Bob', email: 'bob@mail.com', phone: '123-123-1234'},
+          { name: 'Sarah', email: 'sarah@mail.com', phone: '123-123-1234'},
+          { name: 'Joe', email: 'joe@mail.com', phone: '123-123-1234'},
+          { name: 'Mary', email: 'mary@mail.com', phone: '123-123-1234'}
+          ]);
+        },
+
 
         render:function(){
           // $(this.el).html('<td>' + Contact.name + '</td><td>'+ Contact.email + '</td><td>' + Contact.phone + '</td>');
@@ -148,9 +147,11 @@
           //   self.appendContact(Contact);
           // });
           // return this;
-          collection.each(function(Contact){
-            console.log(Contact);
-          });
+          // collection.each(function(Contact){
+          //   console.log(Contact);
+          // });
+          this.$el.html(this.template({ContactCollection: this.collection.toJSON() }));
+          return this;
         },
 
         unrender: function(){
@@ -194,7 +195,7 @@
         }
       });
       var ContactsView = new ContactsView();
-    })(jQuery);
+    // })(jQuery);
     </script>
 
   </body>
