@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chris Turner Challenge - Contact Manager</title>
+    <script src="js/jquery.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="js/underscore.js"></script>
+    <script src="js/backbone.js"></script>
+  </head>
+  <body>
+
+    <div class="container">
+      <h1>Contacts Manager<input type="text" class="form-control pull-right" style="width:200px; display:inline" placeholder="Contact Search">
+            </h1>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="ContactView">
+                  <!-- rendered view -->
+                </tr>
+              <button class="btn btn-default btn-xs" id="edit">Edit</button> 
+                    <button class="btn btn-danger btn-xs" id="remove">Remove</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <h2>Add Contact</h2>
+            <form role="form">
+              <div class="form-group">
+                <label for="text">Name</label>
+                <input type="text" class="form-control" id="text" placeholder="Enter name" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter email" required>
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone number</label>
+                <input type="text" class="form-control" id="phone" placeholder="Enter phone number" required>
+              </div>
+              <button type="button" class="btn btn-default" id="clear">Clear</button> 
+              <button type="submit" class="btn btn-success"id="add">Add Contact</button>
+            </form>
+
+            <form role="form">
+              <div class="modal fade" id="editModal" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Edit Contact</h4>
+              </div>
+              <div class="modal-body">
+
+                <div class="form-group">
+                  <label for="text">Name</label>
+                  <input type="text" class="form-control" id="text" placeholder="Enter name" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email address</label>
+                  <input type="email" class="form-control" id="email" placeholder="Enter email" required>
+                </div>
+                <div class="form-group">
+                  <label for="phone">Phone number</label>
+                  <input type="text" class="form-control" id="phone" placeholder="Enter phone number"required>
+                </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </div>
+            </div>
+    </div>
+
+    <script>
+    (function ($){
+      Backbone.sync = function(method, model, success, error){
+      success(); 
+      }
+      var Contact = Backbone.Model.extend({
+        defaults: {
+          contact1: { 
+            name: 'Bob', 
+            email: 'bob@mail.com', 
+            phone: '123-123-1234'
+          },
+          contact2: {
+            name: 'Sarah', 
+            email: 'sarah@mail.com', 
+            phone: '123-123-1234'
+          },
+          contact3: {
+            name: 'Joe', 
+            email: 'joe@mail.com', 
+            phone: '123-123-1234'
+          },
+            contact4: {
+            name: 'Mary', 
+            email: 'mary@mail.com', 
+            phone: '123-123-1234'
+          }
+        }
+      });
+
+      var ContactList = Backbone.Collection.extend({
+        initialize: function(options){
+          this.options = _(options).pick('name', 'email', 'phone')
+            this.bind('add', options.view.addContact);
+        },
+        // model:Contact
+      });
+      
+      var ContactsView = Backbone.View.extend({
+        el: $('#ContactView'),
+
+        initialize: function(){
+          // this.ContactList = new ContactList({ view: this });
+          //_.bindAll(this, 'render', 'unrender', 'add', 'edit', 'remove', 'search');
+          // this.model.bind('add', options.view.addContact)
+          // this.model.bind('edit', this.render);
+          // this.model.bind('remove', this.unrender);
+          var self = this;
+          this.collection = new ContactList();
+          this.collection.fetch().done(function(){
+            self.render();
+          });
+        },
+
+        events: {
+          'click button#add': 'add',
+          'click button#edit': 'edit',
+          'click button#remove': 'remove',
+          'click button#search': 'search'
+        },
+
+        render:function(){
+          // $(this.el).html('<td>' + Contact.name + '</td><td>'+ Contact.email + '</td><td>' + Contact.phone + '</td>');
+          // _(this.collection.models).each(function(Contact){
+          //   self.appendContact(Contact);
+          // });
+          // return this;
+          collection.each(function(Contact){
+            console.log(Contact);
+          });
+        },
+
+        unrender: function(){
+          $(this.el).remove();
+        },
+
+        remove: function(){
+          this.contact.destroy();
+        },
+        search: function(){
+          this.contact.search();
+        }
+      });
+        
+      var AddView = Backbone.Collection.extend({
+        add: function(){
+          var Contact = new Contact();
+          contact.set({
+            //pull the input from the form
+          });
+          this.collection.add(Contact);
+        },
+      });  
+
+      var EditView = Backbone.View.extend({
+        el: $('body'),
+
+        events: {
+          'click button#edit': 'EditContact'
+        },
+        initialize: function(){
+        _.bindAll(this, 'render', 'EditContact');
+        this.model.bind('render', this.render);
+        this.model.bind('EditContact', this.render);
+        },
+        render: function(){
+          $(this.el).show('#EditModal')
+          },
+        EditContact: function(){
+          //omg
+        }
+      });
+      var ContactsView = new ContactsView();
+    })(jQuery);
+    </script>
+
+  </body>
+</html>
