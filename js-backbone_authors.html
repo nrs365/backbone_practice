@@ -1,0 +1,91 @@
+<html>
+<head>
+    <title>Backbone practice - making a list of authors</title>
+</head>
+<body>
+<script src="js/jquery.js"></script>
+<script src="js/underscore.js"></script>
+<script src="js/backbone.js"></script>
+
+<script>
+(function($){
+    
+    var Authors = Backbone.Model.extend({
+        initialize: function() {
+            _.bindAll(this,'chooseAuthor', 'bookTitle');
+        },
+        defaults: {
+            "authors": {
+                "e e cummings": {
+                    "title": "The Enormous Room"
+                },
+                "Martin Heidegger": {
+                    "title": "Being and Time"
+                },
+                "Soren Kierkegaard": {
+                    "title": "Fear and Trembling"
+                }
+            },
+            // chooseAuthor: function() {
+            //     $.extend(true, {}, this.get("title"));
+            // },
+            // bookTitle: function(title){
+            //     return _.where(this.chooseAuthor(), function(){
+            //         "title": title}
+            //     });
+        }
+    });
+
+    var Books = Backbone.Collection.extend({
+        model: Authors
+    });
+    //})
+    var AuthorView = Backbone.View.extend({
+        initialize: function(){ // i think a parameter gets passed in this function?
+            _.bindAll(this, "chooseAuthor", "bookTitle");
+            this.model.on('authors'), this.render;//????
+        },
+        events: {
+            'click li': "authors"
+        },
+        render: function() {
+            $(this.el).html('<li>'+this.model.get('authors')+'</li>');
+            return this;
+        }
+    });
+
+    var TitleView = Backbone.View.extend({
+        el: $('body'),
+
+        events: {
+            'click #li': 'addTitle'
+        },
+
+        initialize: function(){
+            _.bindAll(this, 'render', 'addTitle');
+            this.collection = new List();
+            this.collection.bind('add', this.addTitle);
+            this.render();
+        },
+        render: function(){
+            var self = this;
+            $(this.el).append("<ul></ul>");
+            _(this.collection.models).each(function(item){
+                self.addTitle(title);
+            }, this);
+        },
+
+        addTitle: function(title){
+            var titleView = new TitleView({
+                model: authors
+            });
+            $('ul', this.el).append(addTitle.render().el);
+        }
+    });
+
+    var authorView = new AuthorView();
+})(jQuery);    
+
+</script>
+</body>
+</html>
