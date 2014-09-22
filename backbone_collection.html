@@ -10,65 +10,79 @@
   </head>
   <body>
     <h1>displaying a collection in backbone</h1>
-    <ul>
-    </ul>    
+    <div id="mydiv">testing collection</div>
+    <script type="text/template" id="details">
+    <ul><% _.each(ContactCollection, function(contact) { %><li><%=contact.name%></li>
+      <%});%>
+    </ul>
+    </script>    
 
 <script>
-(function($){
-Backbone.sync = function(method, model, success, error){
-      success(); 
-      };
+
 var Contact = Backbone.Model.extend({
-  defaults: {
-    name: 'Guest User',
-    age: 30,
-    occupation: 'worker'
-  }
 });
 // A List of People
 var ContactCollection = Backbone.Collection.extend({
+  url: '/echo/json/',
   model: Contact
 });
 // View for all people
 var ContactsView = Backbone.View.extend({
-  tagName: 'ul',
+  el: '#mydiv',
+  template: _.template($("#details").html()),
+  initialize: function(){
+    this.collection = new ContactCollection()
+    this.listenTo(this.collection, 'reset', this.render);
+
+    this.collection.reset([
+      { name: "Bob"
+      }, { name: "Mary" },
+      { name: "Joe"}
+    ]);
+  },
   render: function(){
-      this.collection.each(function(person){
-          var ContactView = new ContactView({ model: person });
-          this.$el.append(ContactView.render().el); // calling render method manually..
-      }, this);
-      return this; // returning this for chaining..
+    this.$el.html(this.template({ContactCollection: this.collection.toJSON() }));
+    return this;
   }
+//   render: function(){
+//       this.collection.each(function(person){
+//           var ContactView = new ContactView({ model: person });
+//           this.$el.append(ContactView.render().el); // calling render method manually..
+//       }, this);
+//       return this; // returning this for chaining..
+//   }
+// });
+// // The View for a Person
+// var ContactView = Backbone.View.extend({
+//   tagName: 'li',
+//   template: _.template($('#contactTemplate').html()),
+//        //////////   initialize function is gone from there. So we need to call render method manually now..
+//   render: function(){
+//       this.$el.html( this.template(this.model.toJSON()));
+//       return this;  // returning this from render method..
+//   }
+// });
+// var ContactsCollection = new ContactsCollection([
+//   {
+//       name: 'Mohit Jain',
+//       age: 26
+//   },
+//   {
+//       name: 'Taroon Tyagi',
+//       age: 25,
+//       occupation: 'web designer'
+//   },
+//   {
+//       name: 'Rahul Narang',
+//       age: 26,
+//       occupation: 'Java Developer'
+//   },
+// // ]);
+// var ContactsView = new ContactsView({ collection: ContactsCollection });
+// $(document.body).append(ContactsView.render().el);   // adding people view in DOM.. Only for demo purpose...
 });
-// The View for a Person
-var ContactView = Backbone.View.extend({
-  tagName: 'li',
-  template: _.template($('#contactTemplate').html()),
-       //////////   initialize function is gone from there. So we need to call render method manually now..
-  render: function(){
-      this.$el.html( this.template(this.model.toJSON()));
-      return this;  // returning this from render method..
-  }
-});
-var ContactsCollection = new ContactsCollection([
-  {
-      name: 'Mohit Jain',
-      age: 26
-  },
-  {
-      name: 'Taroon Tyagi',
-      age: 25,
-      occupation: 'web designer'
-  },
-  {
-      name: 'Rahul Narang',
-      age: 26,
-      occupation: 'Java Developer'
-  },
-]);
-var ContactsView = new ContactsView({ collection: ContactsCollection });
-$(document.body).append(ContactsView.render().el);   // adding people view in DOM.. Only for demo purpose...
-});
+var ContactsView = new ContactsView();
+
 </script>
 </body>
 </html>
