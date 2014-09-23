@@ -89,10 +89,8 @@
     </div>
 
     <script>
-    // (function ($){
-    //   Backbone.sync = function(method, model, success, error){
-    //   success(); 
-    //   }
+    (function ($){
+  
       var Contact = Backbone.Model.extend({
       });
 
@@ -113,9 +111,9 @@
         },
         
         initialize: function(){
-        // _(this).bindAll(this, 'add', 'edit');
-        // this.collection.bind('add', this.add);
-        // this.collection.bind('remove',this.remove);
+        _(this).bindAll(this, 'add', 'edit');
+        this.collection.bind('add', this.add);
+        this.collection.bind('remove',this.remove);
         this.collection = new ContactCollection();
         this.listenTo(this.collection, 'reset', this.render);
 
@@ -134,10 +132,7 @@
         edit:function(){
           modalView = new EditView();
           modalView.show();
-        }
-      });
-        
-      var AddView = Backbone.Collection.extend({
+        },
         add: function(){
           var Contact = new Contact();
           contact.set({
@@ -145,7 +140,10 @@
           });
           this.collection.add(Contact);
         },
-      });  
+        remove: function(){
+
+        }
+      });
 
       var EditView = Backbone.View.extend({
       //   el: $('editModal'),
@@ -189,7 +187,7 @@
         }
       });
       var ContactsView = new ContactsView();
-    // })(jQuery);
+    })(jQuery);
     </script>
 
   </body>
